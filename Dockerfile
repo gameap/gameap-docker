@@ -1,4 +1,4 @@
-FROM knik/php:7.4-swoole-alpine
+FROM knik/php:7.2-cli-alpine
 
 LABEL author="Nikita Kuznetsov" maintainer="nikita.hldm@gmail.com"
 
@@ -14,7 +14,7 @@ WORKDIR /var/www/gameap
 
 RUN git clone https://github.com/et-nik/gameap /var/www/gameap \
     && cp .env.example .env \
-    && composer install --no-dev --optimize-autoloader \
+    && composer install --no-interaction --no-ansi --prefer-dist --no-dev --optimize-autoloader \
     && php artisan key:generate --force \
     && npm install \
     && npm run prod \
@@ -22,12 +22,9 @@ RUN git clone https://github.com/et-nik/gameap /var/www/gameap \
     && rm -rf .npm \
     && rm -rf .composer
 
-RUN composer require --update-no-dev --optimize-autoloader "swooletw/laravel-swoole" \
-    && php artisan vendor:publish --tag=laravel-swoole \
-    && sed -i '/^.*providers.*/a Silber\\Bouncer\\BouncerServiceProvider::class,' config/swoole_http.php \
-    && sed -i '/^.*providers.*/a Gameap\\Providers\\AppServiceProvider::class,' config/swoole_http.php \
-    && sed -i '/^.*providers.*/a Gameap\\Providers\\AuthServiceProvider::class,' config/swoole_http.php \
-    && sed -i '/^.*providers.*/a Illuminate\\Auth\\AuthServiceProvider::class,' config/swoole_http.php
+RUN composer require spiral/roadrunner-laravel "^3.4" \
+    && php ./artisan vendor:publish --provider='Spiral\RoadRunnerLaravel\ServiceProvider' --tag=config \
+    && ./vendor/bin/rr get-binary
 
 COPY ./entrypoint /entrypoint
 

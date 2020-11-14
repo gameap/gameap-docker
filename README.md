@@ -4,7 +4,7 @@ GameAP Docker image
 
 ### Start a GameAP instance
 ```bash
-docker run --name gameap -p 1215:1215 gameap/gameap
+docker run --name gameap -p 8080:8080 gameap/gameap
 ```
 
 #### With environments
@@ -12,7 +12,7 @@ docker run --name gameap -p 1215:1215 gameap/gameap
 ```bash
 docker run \
     --name gameap \
-    -p 1215:1215 \
+    -p 8080:8080 \
     -e ADMIN_PASSWORD=fpwPOuZD \
     -e APP_LANG=ru \
     -e APP_URL=https://example.com \
@@ -63,4 +63,5 @@ You can set any GameAP environment (see [.env.example](https://github.com/et-nik
 | APP_LANG           | Language                                                        |
 | APP_URL            | GameAP Url                                                      |
 | APP_TIMEZONE       | TimeZone (example UTC, Europe/Moscow                            |
+| HTTP_NUM_WORKERS   | Number of workers to be serving.                                |
 

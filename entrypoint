@@ -1,9 +1,10 @@
 #!/usr/bin/env php
 <?php
 
-putenv("SWOOLE_HTTP_HOST=0.0.0.0");
-
 empty(getenv('DB_CONNECTION')) && putenv("DB_CONNECTION=sqlite");
+
+# Workers settings
+empty(getenv('HTTP_NUM_WORKERS')) && putenv("HTTP_NUM_WORKERS=4");
 
 if (getenv('DB_CONNECTION') == 'sqlite') {
 
@@ -33,7 +34,7 @@ else if (getenv('DB_CONNECTION') == 'mysql') {
             $pdo = new PDO(
                 'mysql:host=' . getenv('DB_HOST') . ';dbname=' . getenv('DB_DATABASE'),
                 getenv('DB_USERNAME'),
-                getenv('DB_PASSWORD'),
+                getenv('DB_PASSWORD')
             );
 
             break;
@@ -67,15 +68,37 @@ $adminPassword = !empty(getenv('ADMIN_PASSWORD'))
             ? getenv('ADMIN_PASSWORD')
             : base64_encode(random_bytes(12));
 
-    system("php artisan user:change-password admin {$adminPassword}");
+system("php artisan user:change-password admin {$adminPassword}");
+
+$rrConfigNumWorkers = getenv('HTTP_NUM_WORKERS');
+
+$rrConfig = <<<YAML
+http:
+  address: 0.0.0.0:8080
+  workers:
+    command: php ./vendor/bin/rr-worker
+    pool:
+      numWorkers: {$rrConfigNumWorkers}
+      maxJobs: 0
+      allocateTimeout: 60
+      destroyTimeout: 60
+static:
+  dir: public
+  forbid: [".php", ".htaccess"]
+YAML;
+
+
+file_put_contents('.rr.yaml', $rrConfig);
 
 echo "\n--------------------------------------\n";
 echo "GameAP starting...\n";
 
 if (isset($adminPassword)) {
+    echo "Admin login: admin\n";
     echo "Admin password: {$adminPassword}\n";
 }
 
-echo "\n";
+echo "\n--------------------------------------\n";
+echo "\n\n";
 
-system('php artisan swoole:http start');
+system('./rr -c .rr.yaml serve -d');
