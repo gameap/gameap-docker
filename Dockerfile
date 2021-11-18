@@ -1,4 +1,4 @@
-FROM knik/php:7.3-cli-alpine
+FROM knik/php:7.4-cli-alpine
 
 LABEL author="Nikita Kuznetsov" maintainer="nikita.hldm@gmail.com"
 
@@ -22,8 +22,9 @@ RUN git clone https://github.com/et-nik/gameap /var/www/gameap \
     && rm -rf .npm \
     && rm -rf .composer
 
-RUN composer require spiral/roadrunner-laravel "^3.7" \
+RUN composer require spiral/roadrunner-laravel "^5.4" \
     && php ./artisan vendor:publish --provider='Spiral\RoadRunnerLaravel\ServiceProvider' --tag=config \
+    && composer require spiral/roadrunner:v2.5.3 nyholm/psr7 \
     && ./vendor/bin/rr get-binary
 
 COPY ./entrypoint /entrypoint
