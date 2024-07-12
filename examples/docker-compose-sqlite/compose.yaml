@@ -1,0 +1,18 @@
+name: gameap
+
+services:
+  gameap:
+    image: gameap/gameap
+    container_name: gameap
+    restart: always
+    ports:
+      - "80:8000"
+    volumes:
+      - type: volume
+        source: gameap_sqlite
+        target: "/var/www/gameap"
+    env_file: .env
+
+volumes:
+  gameap_sqlite:
+    name: "gameap-sqlite"
