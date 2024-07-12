@@ -2,7 +2,7 @@ name: gameap
 
 services:
   gameap:
-    image: gameap/gameap
+    image: gameap/gameap:latest
     container_name: gameap
     restart: always
     ports:
