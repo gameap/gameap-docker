@@ -4,7 +4,7 @@ GameAP Docker image
 
 ### Start a GameAP instance
 ```bash
-docker run --name gameap -p 8080:8080 gameap/gameap
+docker run --name gameap -p 8000:8000 gameap/gameap
 ```
 
 #### With environments
@@ -12,7 +12,7 @@ docker run --name gameap -p 8080:8080 gameap/gameap
 ```bash
 docker run \
     --name gameap \
-    -p 8080:8080 \
+    -p 8000:8000 \
     -e ADMIN_PASSWORD=fpwPOuZD \
     -e APP_LANG=ru \
     -e APP_URL=https://example.com \
